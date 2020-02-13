@@ -1,6 +1,8 @@
 package my.sdr.redisex;
 
 import my.sdr.redisex.dto.InvoicePoint;
+import my.sdr.redisex.dto.Student;
+import my.sdr.redisex.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -9,10 +11,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Component
 public class RedisRunner implements ApplicationRunner {
@@ -23,6 +23,9 @@ public class RedisRunner implements ApplicationRunner {
 
     @Autowired
     private RedisTemplate<Object, Object> redisTemplateObjObj;
+
+    @Autowired
+    private StudentRepository studentRepository;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -55,5 +58,16 @@ public class RedisRunner implements ApplicationRunner {
         hashOps.put("invoicePoints", dto2.getInvoiceNumber(), dto2);
         List<InvoicePoint> invoicePoints = hashOps.multiGet("invoicePoints", Arrays.asList(dto1.getInvoiceNumber(), dto2.getInvoiceNumber()));
         System.out.println("HMGET: " + invoicePoints);
+
+
+        Student s1 = new Student(1L, "홍길동", 120);
+        Student s2 = new Student(2L, "HongGilSun", 60);
+        studentRepository.save(s1);
+        studentRepository.save(s2);
+
+        Student student1 = studentRepository.findOne(1L);
+        Student student2 = studentRepository.findOne(2L);
+        System.out.println("student1 : " + student1);
+        System.out.println("student2 : " + student2);
     }
 }
